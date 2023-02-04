@@ -1,29 +1,40 @@
-import { createSlice, PayloadAction } from "@reduxjs/toolkit";
-import { NewsItem } from "types/item";
+import {createSlice} from "@reduxjs/toolkit";
 
 
 const initialState = {
-    newsIds: [],
-    newsItems: [],
-    newsItemLoaded: false
+  newsIds: [],
+  newsItems: null,
+  apiNewsItemsLoaded: false,
+  csvNewsItemsLoaded: false
 }
 
+const sortNews = (news) => {
+  if(!Array.isArray(news)) return news;
+  return news.sort((a, b) => {
+    return b.score - a.score;
+  })
+}
 
-const fileSlice = createSlice({
-    name: "files",
+const newsSlice = createSlice({
+    name: "news",
     initialState,
     reducers: {
       updateNewsIds: (state, action) => {
-        state.newsIds = action.payload    
-        state.newsItemLoaded = true;        
+        state.newsIds = action.payload;
       },
       updateNewsItems: (state, action) => {
-        state.newsItems = action.payload
+        const newState = Array.isArray(state.newsItems) ? state.newsItems : [];
+        state.newsItems = sortNews([...newState, ...action.payload]);
+      },
+      checkAPINewsFetchStatus: (state, action) => {
+        state.apiNewsItemsLoaded = true
+      },
+      checkCSVNewsFetchStatus: (state, action) => {
+        state.csvNewsItemsLoaded = true
       }
-    },
-    extraReducers: (builder) => {
-    //   builder.addCase()
+
     },
 })
 
-export const {updateNewsIds} = fileSlice.actions;
+export const {updateNewsIds, updateNewsItems, checkAPINewsFetchStatus, checkCSVNewsFetchStatus} = newsSlice.actions;
+export default newsSlice.reducer;
