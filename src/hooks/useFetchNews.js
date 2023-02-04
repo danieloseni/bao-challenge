@@ -3,6 +3,7 @@ import {getNewsItem, getNewsList} from 'data/newsApi';
 import {toast} from 'react-hot-toast';
 import {useDispatch} from 'react-redux';
 import {checkAPINewsFetchStatus, updateNewsIds, updateNewsItems} from 'redux/slices/newsSlice';
+import {useQueries} from 'react-query';
 
 
 const useFetchNews = () => {
@@ -11,6 +12,7 @@ const useFetchNews = () => {
   const [progress, setProgress] = useState(0);
   const dispatch = useDispatch();
 
+  //caching should be used here so as not to keep querying the API but in order to make the app simple and easy to traverse it would be left out
   const batchFetchNewsItems = useCallback(async (ids) => {
     const totalItems = ids.length;
     const MAX_CONCURRENT_FETCHES = 10; //We limit it to 10 because that seems to be in the middle ground between responsiveness and speed
