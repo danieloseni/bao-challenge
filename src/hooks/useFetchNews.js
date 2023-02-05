@@ -1,16 +1,12 @@
 import {useCallback, useState} from 'react';
 import {getNewsItem, getNewsList} from 'data/newsApi';
 import {toast} from 'react-hot-toast';
-import {useDispatch} from 'react-redux';
-import {checkAPINewsFetchStatus, updateNewsIds, updateNewsItems} from 'redux/slices/newsSlice';
-import {useQueries} from 'react-query';
 
 
-const useFetchNews = () => {
+const useFetchNews = ({onNewsItems, onNewsIds}) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
-  const dispatch = useDispatch();
 
   //caching should be used here so as not to keep querying the API but in order to make the app simple and easy to traverse it would be left out
   const batchFetchNewsItems = useCallback(async (ids) => {
@@ -40,12 +36,9 @@ const useFetchNews = () => {
       setLoading(true);      
       const ids = await getNewsList();
       //clone the ids array before dispatching because passing the array directly makes it immutable making it impossible to splice it later
-      dispatch(updateNewsIds([...ids]));
-      const remoteNews = await batchFetchNewsItems(ids);
-      const news = [...remoteNews];
-      const sortedNews = news;
-      dispatch(updateNewsItems(sortedNews));
-      dispatch(checkAPINewsFetchStatus())
+      onNewsIds([...ids])
+      const news = await batchFetchNewsItems(ids);
+      onNewsItems(news);      
       setLoading(false);
       toast.success('All API news fetched!', {
         position: 'top-right'
@@ -54,7 +47,7 @@ const useFetchNews = () => {
       setLoading(false);
       setError(true);
     }
-  }, [batchFetchNewsItems, dispatch]); 
+  }, [batchFetchNewsItems, onNewsIds, onNewsItems]); 
 
   return {error, loading, fetchNews, progress}
 }
