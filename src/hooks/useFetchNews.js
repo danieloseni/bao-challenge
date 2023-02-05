@@ -1,14 +1,11 @@
 import {useCallback, useState} from 'react';
 import {getNewsItem, getNewsList} from 'data/newsApi';
-import {toast} from 'react-hot-toast';
-
 
 const useFetchNews = ({onNewsItems, onNewsIds}) => {
   const [error, setError] = useState(false);
   const [loading, setLoading] = useState(false);
   const [progress, setProgress] = useState(0);
 
-  //caching should be used here so as not to keep querying the API but in order to make the app simple and easy to traverse it would be left out
   const batchFetchNewsItems = useCallback(async (ids) => {
     const totalItems = ids.length;
     const MAX_CONCURRENT_FETCHES = 10; //We limit it to 10 because that seems to be in the middle ground between responsiveness and speed
@@ -40,9 +37,7 @@ const useFetchNews = ({onNewsItems, onNewsIds}) => {
       const news = await batchFetchNewsItems(ids);
       onNewsItems(news);      
       setLoading(false);
-      toast.success('All API news fetched!', {
-        position: 'top-right'
-      })
+      
     } catch (error) {
       setLoading(false);
       setError(true);

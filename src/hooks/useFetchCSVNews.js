@@ -1,5 +1,4 @@
 import {useCallback, useState} from 'react';
-import {toast} from 'react-hot-toast';
 import {parseNews} from 'data/newsCSVParser';
 
 const useFetchCSVNews = ({onData}) => {
@@ -12,10 +11,7 @@ const useFetchCSVNews = ({onData}) => {
       setLoading(true);
       const news = await parseNews();
       onData(news)
-      setLoading(false);
-      toast.success('All CSV news parsed!', {
-        position: 'top-right'
-      })
+      setLoading(false);      
     } catch (error) {
       setError(true);
       setLoading(false);
