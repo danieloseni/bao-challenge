@@ -24,14 +24,14 @@ const EmptyNewsItems = () => {
   return (
     <CentralizedBox>
       <p>
-        Nothing has been loaded. Head on over to the &nbsp;
-        <Link
-          to="/admin"
-          className="underline">
-          admin
-        </Link> 
-        &nbsp; page and load some news
+        Nothing has been loaded. Head on over to the admin page and load some news
       </p>
+
+      <Link
+          to="/admin"
+          className="px-6 py-2 bg-black text-white rounded-full">
+          Go to Admin
+        </Link> 
     </CentralizedBox>
   )
 }
