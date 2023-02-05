@@ -11,6 +11,7 @@ import {
   updateNewsItems,
   checkCSVNewsFetchStatus,
 } from 'redux/slices/newsSlice';
+import {toast} from 'react-hot-toast';
 
 const Admin = () => {
   const {csvNewsItemsLoaded, apiNewsItemsLoaded} = useSelector((state) => state.news);
@@ -29,10 +30,13 @@ const Admin = () => {
     error:csvError,
     fetchCsvNews
   } = useFetchCSVNews({onData: (news) => handleCsvNewsUpdate(news)});
-  
+
   const handleNewsItemsUpdate = (items) => {
     dispatch(updateNewsItems(items));
-    dispatch(checkAPINewsFetchStatus())
+    dispatch(checkAPINewsFetchStatus());
+    toast.success('All API news fetched!', {
+      position: 'top-right'
+    })
   }
   const handleNewsIdsUpdate = (ids) => {
     dispatch(updateNewsIds(ids));
@@ -40,6 +44,9 @@ const Admin = () => {
   const handleCsvNewsUpdate = (news) => {
     dispatch(updateNewsItems(news));
     dispatch(checkCSVNewsFetchStatus());
+    toast.success('All CSV news parsed!', {
+      position: 'top-right'
+    })
   }
 
   return (
@@ -74,7 +81,6 @@ const CSVBox = ({loading, error, loaded, fetch, }) => {
     return (
       <button
         className="bg-black grow-0 shrink-0 text-white px-4 py-2 rounded-xl" 
-        aria-label="load news"
         onClick={e => fetch()}>
         Fetch from CSV
       </button>
@@ -96,7 +102,6 @@ const APIBox = ({loading, error, progress, loaded, fetch}) => {
     return (
       <button
         className="bg-black grow-0 shrink-0 text-white px-4 py-2 rounded-xl" 
-        aria-label="load news"
         onClick={e => fetch()}>
         Fetch from API
       </button>
