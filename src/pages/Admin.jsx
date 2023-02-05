@@ -4,11 +4,43 @@ import CentralizedBox from 'layout/CentralizedBox';
 import {useSelector} from 'react-redux';
 import useFetchCSVNews from 'hooks/useFetchCSVNews';
 import { ErrorView, LoadingView } from 'components/Auxiliary';
+import {useDispatch} from 'react-redux';
+import {
+  checkAPINewsFetchStatus,
+  updateNewsIds,
+  updateNewsItems,
+  checkCSVNewsFetchStatus,
+} from 'redux/slices/newsSlice';
 
 const Admin = () => {
   const {csvNewsItemsLoaded, apiNewsItemsLoaded} = useSelector((state) => state.news);
-  const {loading:apiNewsLoading, error:apiError, progress, fetchNews} = useFetchNews();
-  const {loading:csvNewsLoading, error:csvError, fetchCsvNews} = useFetchCSVNews();
+  const dispatch = useDispatch();
+
+  const {
+    loading:apiNewsLoading,
+    error:apiError, progress,
+    fetchNews
+  } = useFetchNews({
+    onNewsItems: (items) => handleNewsItemsUpdate(items),
+    onNewsIds: (ids) => handleNewsIdsUpdate(ids)
+  });
+  const {
+    loading:csvNewsLoading,
+    error:csvError,
+    fetchCsvNews
+  } = useFetchCSVNews({onData: (news) => handleCsvNewsUpdate(news)});
+  
+  const handleNewsItemsUpdate = (items) => {
+    dispatch(updateNewsItems(items));
+    dispatch(checkAPINewsFetchStatus())
+  }
+  const handleNewsIdsUpdate = (ids) => {
+    dispatch(updateNewsIds(ids));
+  }
+  const handleCsvNewsUpdate = (news) => {
+    dispatch(updateNewsItems(news));
+    dispatch(checkCSVNewsFetchStatus());
+  }
 
   return (
     <CentralizedBox>
