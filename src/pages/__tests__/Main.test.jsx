@@ -6,6 +6,15 @@ import Main from 'pages/Main';
 
 const mockStore = configureStore([]);
 
+const EssentialsWrapper = ({store}) => {
+    return (
+        <Provider store={store}>
+          <Router>
+            <Main />
+          </Router>
+        </Provider>
+    );
+}
 
 describe("Main", () => {
     let store;
@@ -19,11 +28,7 @@ describe("Main", () => {
     
     it("Shows redirection prompt when there's no news", () => {
         render(
-          <Provider store={store}>
-            <Router>
-                <Main />
-            </Router>
-          </Provider>
+          <EssentialsWrapper store={store} />
         );
 
         const prompt = screen.getByText(
@@ -43,11 +48,7 @@ describe("Main", () => {
             }
         })
         render(
-          <Provider store={store}>
-            <Router>
-                <Main />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} />
         );
         const storyLink = screen.getByText(/A piece of information/i);
         expect(storyLink).toBeInTheDocument()
@@ -60,11 +61,7 @@ describe("Main", () => {
             }
         })
         render(
-          <Provider store={store}>
-            <Router>
-                <Main />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} />
         );
 
         const prompt = screen.queryByText(

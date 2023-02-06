@@ -6,6 +6,16 @@ import {render, screen, fireEvent, waitFor} from "@testing-library/react";
 import {getNewsItem, getNewsList} from 'data/newsApi';
 import {Toaster} from 'react-hot-toast';
 
+
+const EssentialsWrapper = ({store}) => {
+    return (
+        <Provider store={store}>
+            <Router>
+                <Admin />
+            </Router>
+        </Provider>
+    );
+}
 const mockStore = configureStore([]);
 jest.mock('data/newsApi', () => ({
     getNewsItem: jest.fn(),
@@ -25,12 +35,9 @@ describe('Admin page', () => {
 
     it("Shows fetch api news CTA when api news hasn't been loaded", () => {
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
+       
         const apiNewsCta = screen.getByRole('button', {
             name: /fetch from api/i
         })
@@ -38,11 +45,7 @@ describe('Admin page', () => {
     })
     it("Shows csv news CTA when api news hasn't been loaded", () => {
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const csvNewsCta = screen.getByRole('button', {
             name: /fetch from csv/i
@@ -57,11 +60,7 @@ describe('Admin page', () => {
             }
         })
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const apiNewsPrompt = screen.getByText(/api news has been fetched/i)
         expect(apiNewsPrompt).toBeInTheDocument();
@@ -74,11 +73,7 @@ describe('Admin page', () => {
             }
         })
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const csvNewsPrompt = screen.getByText(/csv has been fetched/i);
         expect(csvNewsPrompt).toBeInTheDocument();
@@ -91,11 +86,7 @@ describe('Admin page', () => {
             }
         })
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const apiNewsCta = screen.queryByRole('button', {
             name: /fetch from api/i
@@ -110,11 +101,7 @@ describe('Admin page', () => {
             }
         })
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const csvNewsCta = screen.queryByRole('button', {
             name: /fetch from csv/i
@@ -124,13 +111,8 @@ describe('Admin page', () => {
     it("Clicking on the api news CTA initiates fetching", async () => {
         
         getNewsList.mockImplementation(() => new Promise((res, rej) => {}));
-
         render(
-          <Provider store={store}>
-            <Router>
-                <Admin />
-            </Router>
-          </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const apiNewsCta = screen.getByRole('button', {
             name: /fetch from api/i
@@ -141,11 +123,7 @@ describe('Admin page', () => {
     it('Shows api error prompt upon api news fetch error', async () => {
         getNewsList.mockImplementation(() => new Promise((res, rej) => rej()));
         render(
-            <Provider store={store}>
-                <Router>
-                    <Admin />
-                </Router>
-            </Provider>
+            <EssentialsWrapper store={store} /> 
         );
         const apiNewsCta = screen.getByRole('button', {
             name: /fetch from api/i
