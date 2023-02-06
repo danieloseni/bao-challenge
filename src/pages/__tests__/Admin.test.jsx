@@ -2,9 +2,16 @@ import configureStore from 'redux-mock-store';
 import {Provider} from 'react-redux'
 import {BrowserRouter as Router} from "react-router-dom";
 import Admin from 'pages/Admin';
-import {render, screen} from "@testing-library/react";
+import {render, screen, fireEvent, waitFor} from "@testing-library/react";
+import {getNewsItem, getNewsList} from 'data/newsApi';
+import {Toaster} from 'react-hot-toast';
+
 const mockStore = configureStore([]);
- 
+jest.mock('data/newsApi', () => ({
+    getNewsItem: jest.fn(),
+    getNewsList: jest.fn()
+}));
+
 describe('Admin page', () => {
     let store;
     beforeEach(() => {
@@ -114,4 +121,41 @@ describe('Admin page', () => {
         })
         expect(csvNewsCta).not.toBeInTheDocument();
     })
+    it("Clicking on the api news CTA initiates fetching", async () => {
+        
+        getNewsList.mockImplementation(() => new Promise((res, rej) => {}));
+
+        render(
+          <Provider store={store}>
+            <Router>
+                <Admin />
+            </Router>
+          </Provider>
+        );
+        const apiNewsCta = screen.getByRole('button', {
+            name: /fetch from api/i
+        });       
+        fireEvent(apiNewsCta, new MouseEvent('click', {bubbles: true}));        
+        await waitFor(async () => expect(await screen.findByText(/hold on/i)).toBeInTheDocument());
+    })
+    it('Shows api error prompt upon api news fetch error', async () => {
+        getNewsList.mockImplementation(() => new Promise((res, rej) => rej()));
+        render(
+            <Provider store={store}>
+                <Router>
+                    <Admin />
+                </Router>
+            </Provider>
+        );
+        const apiNewsCta = screen.getByRole('button', {
+            name: /fetch from api/i
+        });
+        fireEvent(apiNewsCta, new MouseEvent('click', {bubbles: true}));
+        await waitFor(
+            async () => expect(
+                await screen.findByText(/whoops...something went wrong there/i)
+            ).toBeInTheDocument()
+        )
+    })
+    
 })
