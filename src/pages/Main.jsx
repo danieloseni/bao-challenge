@@ -3,22 +3,49 @@ import React from 'react'
 import {Link} from "react-router-dom";
 import {useSelector} from 'react-redux';
 import CentralizedBox from 'layout/CentralizedBox';
+import {FixedSizeList as List} from 'react-window';
+import useWindowHeight from 'hooks/useWindowHeight';
 
 const Main = () => {
   const {newsItems} = useSelector((state) => state.news);
+  const {height} = useWindowHeight();
+  const HEADER_HEIGHT = 50;
+
   if(!newsItems){
     return <EmptyNewsItems />
   }
   return (
-    <ol className="px-12 py-6 flex gap-8 flex-wrap">
-      {
-        newsItems?.map(({title, url, id}) => (
-          <NewsTile key={id} title={title} id={id} source={url} />
-        ))
-      }     
-    </ol>
+    <CentralizedBox>
+        <List
+          height={height - HEADER_HEIGHT}
+          itemCount={newsItems.length}
+          itemSize={60}
+          width={400}
+          itemData={newsItems}>
+          {ListItem}
+        </List>           
+    </CentralizedBox>
   );
 }
+
+
+const ListItem = ({ index, style, data }) => {
+  const item = data[index];  
+  if(!item){
+    console.log('no item')
+    return <></>
+  }
+  const {title, id, url} = item;
+  return (
+    <div style={style}>
+      <NewsTile title={title} id={id} source={url} />
+    </div>
+  )
+}
+
+ 
+
+
 
 const EmptyNewsItems = () => {
   return (
@@ -28,10 +55,10 @@ const EmptyNewsItems = () => {
       </p>
 
       <Link
-          to="/admin"
-          className="px-6 py-2 bg-black text-white rounded-full">
-          Go to Admin
-        </Link> 
+        to="/admin"
+        className="px-6 py-2 bg-black text-white rounded-full">
+        Go to Admin
+      </Link> 
     </CentralizedBox>
   )
 }
